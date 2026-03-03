@@ -189,6 +189,7 @@ class TaskManager {
         const deleteBtn = document.createElement('button');
         deleteBtn.className = 'task-delete';
         deleteBtn.textContent = 'Delete';
+        deleteBtn.type = 'button';
         deleteBtn.addEventListener('click', () => {
             this.deleteTask(task.id);
             this.renderTasks();
@@ -223,14 +224,15 @@ class TaskManager {
     // ==================== Event Listeners ====================
     initializeUI() {
         // Set up toggle buttons initial state
-        document.getElementById('urgencyToggle').dataset.state = 'low';
-        document.getElementById('importanceToggle').dataset.state = 'low';
+        this.updateToggleButton('urgencyToggle', 'low');
+        this.updateToggleButton('importanceToggle', 'low');
         
         // Set up done section toggle
         const doneToggle = document.getElementById('doneToggle');
         const doneTasks = document.getElementById('doneTasks');
         
-        doneToggle.addEventListener('click', () => {
+        doneToggle.addEventListener('click', (e) => {
+            e.preventDefault();
             doneToggle.classList.toggle('active');
             doneTasks.classList.toggle('collapsed');
         });
@@ -243,27 +245,44 @@ class TaskManager {
         const urgencyToggle = document.getElementById('urgencyToggle');
         const importanceToggle = document.getElementById('importanceToggle');
 
+        // Handle form submission
         form.addEventListener('submit', (e) => {
             e.preventDefault();
             this.handleAddTask();
         });
 
+        // Handle urgency toggle
         urgencyToggle.addEventListener('click', (e) => {
             e.preventDefault();
-            this.toggleButtonState(urgencyToggle);
+            e.stopPropagation();
+            this.toggleUrgency();
         });
 
+        // Handle importance toggle
         importanceToggle.addEventListener('click', (e) => {
             e.preventDefault();
-            this.toggleButtonState(importanceToggle);
+            e.stopPropagation();
+            this.toggleImportance();
         });
     }
 
-    toggleButtonState(button) {
-        const currentState = button.dataset.state;
-        const newState = currentState === 'high' ? 'low' : 'high';
-        button.dataset.state = newState;
-        button.querySelector('.toggle-label').textContent = this.capitalize(newState);
+    toggleUrgency() {
+        const button = document.getElementById('urgencyToggle');
+        const newState = button.dataset.state === 'high' ? 'low' : 'high';
+        this.updateToggleButton('urgencyToggle', newState);
+    }
+
+    toggleImportance() {
+        const button = document.getElementById('importanceToggle');
+        const newState = button.dataset.state === 'high' ? 'low' : 'high';
+        this.updateToggleButton('importanceToggle', newState);
+    }
+
+    updateToggleButton(buttonId, state) {
+        const button = document.getElementById(buttonId);
+        button.dataset.state = state;
+        const label = button.querySelector('.toggle-label');
+        label.textContent = this.capitalize(state);
     }
 
     handleAddTask() {
@@ -273,7 +292,17 @@ class TaskManager {
         const importanceToggle = document.getElementById('importanceToggle');
 
         const title = titleInput.value.trim();
-        if (!title) return;
+        if (!title) {
+            console.warn('Task title is empty');
+            return;
+        }
+
+        console.log('Creating task:', {
+            title,
+            size: sizeSelect.value,
+            urgency: urgencyToggle.dataset.state,
+            importance: importanceToggle.dataset.state
+        });
 
         this.createTask(
             title,
@@ -285,10 +314,8 @@ class TaskManager {
         // Reset form
         titleInput.value = '';
         sizeSelect.value = 'M';
-        urgencyToggle.dataset.state = 'low';
-        urgencyToggle.querySelector('.toggle-label').textContent = 'Low';
-        importanceToggle.dataset.state = 'low';
-        importanceToggle.querySelector('.toggle-label').textContent = 'Low';
+        this.updateToggleButton('urgencyToggle', 'low');
+        this.updateToggleButton('importanceToggle', 'low');
 
         this.renderTasks();
         titleInput.focus();
@@ -297,5 +324,6 @@ class TaskManager {
 
 // Initialize the app when DOM is ready
 document.addEventListener('DOMContentLoaded', () => {
+    console.log('Initializing TaskManager...');
     new TaskManager();
 });
