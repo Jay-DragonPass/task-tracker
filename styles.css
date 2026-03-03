@@ -19,6 +19,16 @@
     --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
     --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
     --transition: all 0.2s ease;
+    
+    /* Priority colors */
+    --priority-1-color: #dc2626;      /* Red for critical */
+    --priority-1-bg: #fee2e2;
+    --priority-2-color: #ea580c;      /* Orange for important */
+    --priority-2-bg: #ffedd5;
+    --priority-3-color: #f59e0b;      /* Amber for urgent */
+    --priority-3-bg: #fef3c7;
+    --priority-4-color: #10b981;      /* Green for backlog */
+    --priority-4-bg: #ecfdf5;
 }
 
 body {
@@ -31,7 +41,7 @@ body {
 }
 
 .container {
-    max-width: 800px;
+    max-width: 900px;
     margin: 0 auto;
 }
 
@@ -186,28 +196,103 @@ header h1 {
 .tasks-container {
     display: flex;
     flex-direction: column;
-    gap: 24px;
+    gap: 32px;
 }
 
-.tasks-section {
+.todo-section {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.main-section-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    padding: 16px 0;
+    border-bottom: 3px solid var(--primary-color);
+}
+
+/* Priority Sections */
+.priority-section {
     background: var(--bg-primary);
     border-radius: 12px;
-    padding: 24px;
+    padding: 20px;
     box-shadow: var(--shadow-md);
+    border-left: 5px solid var(--border-color);
 }
 
-.section-title {
-    font-size: 1.25rem;
+.priority-section:has(> .tasks-list:empty) {
+    display: none;
+}
+
+.priority-1-title {
+    color: var(--priority-1-color);
+    border-left-color: var(--priority-1-color);
+}
+
+.priority-section:has(#priority1Tasks) {
+    border-left-color: var(--priority-1-color);
+    background: linear-gradient(135deg, #ffffff 0%, var(--priority-1-bg) 100%);
+}
+
+.priority-2-title {
+    color: var(--priority-2-color);
+    border-left-color: var(--priority-2-color);
+}
+
+.priority-section:has(#priority2Tasks) {
+    border-left-color: var(--priority-2-color);
+    background: linear-gradient(135deg, #ffffff 0%, var(--priority-2-bg) 100%);
+}
+
+.priority-3-title {
+    color: var(--priority-3-color);
+    border-left-color: var(--priority-3-color);
+}
+
+.priority-section:has(#priority3Tasks) {
+    border-left-color: var(--priority-3-color);
+    background: linear-gradient(135deg, #ffffff 0%, var(--priority-3-bg) 100%);
+}
+
+.priority-4-title {
+    color: var(--priority-4-color);
+    border-left-color: var(--priority-4-color);
+}
+
+.priority-section:has(#priority4Tasks) {
+    border-left-color: var(--priority-4-color);
+    background: linear-gradient(135deg, #ffffff 0%, var(--priority-4-bg) 100%);
+}
+
+.priority-title {
+    font-size: 1.125rem;
     font-weight: 700;
     margin-bottom: 16px;
-    color: var(--text-primary);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding-bottom: 8px;
+}
+
+.priority-icon {
+    font-size: 1.25rem;
 }
 
 .tasks-list {
     display: flex;
     flex-direction: column;
     gap: 12px;
-    min-height: 50px;
+    min-height: 40px;
+}
+
+.tasks-list.empty-message {
+    min-height: auto;
+    padding: 16px;
+    text-align: center;
+    color: var(--text-secondary);
+    font-style: italic;
 }
 
 .tasks-list.collapsed {
@@ -229,31 +314,16 @@ header h1 {
 .task-item:hover {
     box-shadow: var(--shadow-sm);
     background: #ffffff;
+    transform: translateX(4px);
 }
 
 .task-item.completed {
-    opacity: 0.7;
+    opacity: 0.6;
 }
 
 .task-item.completed .task-title {
     text-decoration: line-through;
     color: var(--text-secondary);
-}
-
-.task-item.priority-1 {
-    border-left-color: var(--danger-color);
-}
-
-.task-item.priority-2 {
-    border-left-color: var(--warning-color);
-}
-
-.task-item.priority-3 {
-    border-left-color: #f59e0b;
-}
-
-.task-item.priority-4 {
-    border-left-color: #10b981;
 }
 
 .task-checkbox {
@@ -334,6 +404,14 @@ header h1 {
     background: #b91c1c;
 }
 
+/* Done Section */
+.done-section {
+    background: var(--bg-primary);
+    border-radius: 12px;
+    padding: 24px;
+    box-shadow: var(--shadow-md);
+}
+
 /* Collapsible */
 .collapsible {
     width: 100%;
@@ -410,8 +488,16 @@ header h1 {
         padding: 16px;
     }
 
-    .tasks-section {
+    .priority-section {
         padding: 16px;
+    }
+
+    .main-section-title {
+        font-size: 1.25rem;
+    }
+
+    .priority-title {
+        font-size: 1rem;
     }
 }
 
