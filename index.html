@@ -54,27 +54,70 @@
             </form>
         </div>
 
+        <div class="empty-state" id="emptyState">
+            <p>No tasks yet. Add one to get started! 🚀</p>
+        </div>
+
         <div class="tasks-container">
-            <section class="tasks-section">
-                <h2 class="section-title">Todo</h2>
-                <div id="todoTasks" class="tasks-list">
-                    <!-- Tasks will be rendered here -->
+            <!-- Todo Tasks by Priority -->
+            <section class="todo-section">
+                <h2 class="main-section-title">📋 Todo</h2>
+                
+                <!-- Priority 1: High Importance + High Urgency -->
+                <div class="priority-section">
+                    <h3 class="priority-title priority-1-title">
+                        <span class="priority-icon">🔴</span>
+                        Critical (High Importance + High Urgency)
+                    </h3>
+                    <div id="priority1Tasks" class="tasks-list">
+                        <!-- Tasks will be rendered here -->
+                    </div>
+                </div>
+
+                <!-- Priority 2: High Importance + Low Urgency -->
+                <div class="priority-section">
+                    <h3 class="priority-title priority-2-title">
+                        <span class="priority-icon">🟠</span>
+                        Important (High Importance + Low Urgency)
+                    </h3>
+                    <div id="priority2Tasks" class="tasks-list">
+                        <!-- Tasks will be rendered here -->
+                    </div>
+                </div>
+
+                <!-- Priority 3: Low Importance + High Urgency -->
+                <div class="priority-section">
+                    <h3 class="priority-title priority-3-title">
+                        <span class="priority-icon">🟡</span>
+                        Urgent (Low Importance + High Urgency)
+                    </h3>
+                    <div id="priority3Tasks" class="tasks-list">
+                        <!-- Tasks will be rendered here -->
+                    </div>
+                </div>
+
+                <!-- Priority 4: Low Importance + Low Urgency -->
+                <div class="priority-section">
+                    <h3 class="priority-title priority-4-title">
+                        <span class="priority-icon">🟢</span>
+                        Backlog (Low Importance + Low Urgency)
+                    </h3>
+                    <div id="priority4Tasks" class="tasks-list">
+                        <!-- Tasks will be rendered here -->
+                    </div>
                 </div>
             </section>
 
-            <section class="tasks-section">
+            <!-- Done Section -->
+            <section class="done-section">
                 <button class="collapsible" id="doneToggle">
                     <span class="toggle-icon">▶</span>
-                    Done (<span id="doneCount">0</span>)
+                    ✅ Done (<span id="doneCount">0</span>)
                 </button>
                 <div id="doneTasks" class="tasks-list collapsed">
                     <!-- Completed tasks will be rendered here -->
                 </div>
             </section>
-        </div>
-
-        <div class="empty-state" id="emptyState">
-            <p>No tasks yet. Add one to get started! 🚀</p>
         </div>
     </div>
 
