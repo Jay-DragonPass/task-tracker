@@ -76,6 +76,17 @@ class TaskManager {
         return sizeMap[size] || 3;
     }
 
+    getSortedTasksByPriority(status, priority) {
+        return this.tasks
+            .filter(task => task.status === status && this.getPriorityCategory(task.urgency, task.importance) === priority)
+            .sort((a, b) => {
+                // Sort by size order within priority
+                const sizeA = this.getSizeOrder(a.size);
+                const sizeB = this.getSizeOrder(b.size);
+                return sizeA - sizeB;
+            });
+    }
+
     getSortedTasks(status) {
         return this.tasks
             .filter(task => task.status === status)
@@ -98,13 +109,20 @@ class TaskManager {
 
     // ==================== UI Rendering ====================
     renderTasks() {
-        const todoTasks = this.getSortedTasks('todo');
-        const doneTasks = this.getSortedTasks('done');
+        // Render todo tasks by priority
+        for (let priority = 1; priority <= 4; priority++) {
+            const tasks = this.getSortedTasksByPriority('todo', priority);
+            this.renderTaskList(`priority${priority}Tasks`, tasks);
+        }
 
-        this.renderTaskList('todoTasks', todoTasks);
+        // Render done tasks
+        const doneTasks = this.getSortedTasks('done');
         this.renderTaskList('doneTasks', doneTasks);
         this.updateDoneCount(doneTasks.length);
-        this.updateEmptyState(todoTasks.length === 0 && doneTasks.length === 0);
+
+        // Update empty state
+        const allTodoTasks = this.getSortedTasks('todo');
+        this.updateEmptyState(allTodoTasks.length === 0 && doneTasks.length === 0);
     }
 
     renderTaskList(containerId, tasks) {
@@ -112,7 +130,6 @@ class TaskManager {
         container.innerHTML = '';
 
         if (tasks.length === 0) {
-            container.innerHTML = '<p style="color: var(--text-secondary); text-align: center; padding: 20px;">No tasks</p>';
             return;
         }
 
