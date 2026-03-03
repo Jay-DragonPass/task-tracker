@@ -169,6 +169,10 @@ header h1 {
     box-shadow: var(--shadow-sm);
 }
 
+.toggle-btn:active {
+    transform: translateY(0);
+}
+
 .btn-add {
     padding: 12px 24px;
     background: var(--primary-color);
@@ -228,7 +232,6 @@ header h1 {
 
 .priority-1-title {
     color: var(--priority-1-color);
-    border-left-color: var(--priority-1-color);
 }
 
 .priority-section:has(#priority1Tasks) {
@@ -238,7 +241,6 @@ header h1 {
 
 .priority-2-title {
     color: var(--priority-2-color);
-    border-left-color: var(--priority-2-color);
 }
 
 .priority-section:has(#priority2Tasks) {
@@ -248,7 +250,6 @@ header h1 {
 
 .priority-3-title {
     color: var(--priority-3-color);
-    border-left-color: var(--priority-3-color);
 }
 
 .priority-section:has(#priority3Tasks) {
@@ -258,7 +259,6 @@ header h1 {
 
 .priority-4-title {
     color: var(--priority-4-color);
-    border-left-color: var(--priority-4-color);
 }
 
 .priority-section:has(#priority4Tasks) {
