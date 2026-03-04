@@ -53,25 +53,64 @@ class TaskManager {
         if (task) {
             task.status = task.status === 'todo' ? 'done' : 'todo';
             this.saveTasks();
+            
+            // Show celebration if task was completed
+            if (task.status === 'done') {
+                this.celebrate();
+            }
         }
+    }
+
+    // ==================== Celebration ====================
+    celebrate() {
+        const messages = [
+            'Well done! 🎉',
+            'Awesome! 💪',
+            'Great job! ⭐',
+            'You rock! 🌟',
+            'Excellent! 🚀',
+            'Keep it up! 🔥',
+            'Fantastic! ✨',
+            'Amazing! 🎊'
+        ];
+
+        const randomMessage = messages[Math.floor(Math.random() * messages.length)];
+        this.showSpeechBubble(randomMessage);
+        this.animateCompanion();
+    }
+
+    showSpeechBubble(message) {
+        const bubble = document.getElementById('speechBubble');
+        const content = bubble.querySelector('.bubble-content');
+        content.textContent = message;
+        
+        bubble.classList.remove('show');
+        // Trigger reflow to restart animation
+        void bubble.offsetWidth;
+        bubble.classList.add('show');
+
+        setTimeout(() => {
+            bubble.classList.remove('show');
+        }, 2500);
+    }
+
+    animateCompanion() {
+        const companion = document.getElementById('companion');
+        companion.style.animation = 'none';
+        // Trigger reflow
+        void companion.offsetWidth;
+        companion.style.animation = 'float 3s ease-in-out infinite';
     }
 
     // ==================== Sorting & Filtering ====================
     getPriorityCategory(urgency, importance) {
-        // Priority Categories in strict order:
-        // 1. High Importance + High Urgency
-        // 2. High Importance + Low Urgency
-        // 3. Low Importance + High Urgency
-        // 4. Low Importance + Low Urgency
-        
         if (importance === 'high' && urgency === 'high') return 1;
         if (importance === 'high' && urgency === 'low') return 2;
         if (importance === 'low' && urgency === 'high') return 3;
-        return 4; // low importance + low urgency
+        return 4;
     }
 
     getSizeOrder(size) {
-        // S first, M second, L last
         const sizeMap = { 'S': 0, 'M': 1, 'L': 2 };
         return sizeMap[size] || 3;
     }
@@ -80,7 +119,6 @@ class TaskManager {
         return this.tasks
             .filter(task => task.status === status && this.getPriorityCategory(task.urgency, task.importance) === priority)
             .sort((a, b) => {
-                // Sort by size order within priority
                 const sizeA = this.getSizeOrder(a.size);
                 const sizeB = this.getSizeOrder(b.size);
                 return sizeA - sizeB;
@@ -91,7 +129,6 @@ class TaskManager {
         return this.tasks
             .filter(task => task.status === status)
             .sort((a, b) => {
-                // First sort by priority category
                 const priorityA = this.getPriorityCategory(a.urgency, a.importance);
                 const priorityB = this.getPriorityCategory(b.urgency, b.importance);
                 
@@ -99,7 +136,6 @@ class TaskManager {
                     return priorityA - priorityB;
                 }
                 
-                // Then sort by size order
                 const sizeA = this.getSizeOrder(a.size);
                 const sizeB = this.getSizeOrder(b.size);
                 
@@ -109,18 +145,15 @@ class TaskManager {
 
     // ==================== UI Rendering ====================
     renderTasks() {
-        // Render todo tasks by priority
         for (let priority = 1; priority <= 4; priority++) {
             const tasks = this.getSortedTasksByPriority('todo', priority);
             this.renderTaskList(`priority${priority}Tasks`, tasks);
         }
 
-        // Render done tasks
         const doneTasks = this.getSortedTasks('done');
         this.renderTaskList('doneTasks', doneTasks);
         this.updateDoneCount(doneTasks.length);
 
-        // Update empty state
         const allTodoTasks = this.getSortedTasks('todo');
         this.updateEmptyState(allTodoTasks.length === 0 && doneTasks.length === 0);
     }
@@ -223,11 +256,9 @@ class TaskManager {
 
     // ==================== Event Listeners ====================
     initializeUI() {
-        // Set up toggle buttons initial state
         this.updateToggleButton('urgencyToggle', 'low');
         this.updateToggleButton('importanceToggle', 'low');
         
-        // Set up done section toggle
         const doneToggle = document.getElementById('doneToggle');
         const doneTasks = document.getElementById('doneTasks');
         
@@ -235,6 +266,12 @@ class TaskManager {
             e.preventDefault();
             doneToggle.classList.toggle('active');
             doneTasks.classList.toggle('collapsed');
+        });
+
+        // Companion click animation
+        const companion = document.getElementById('companion');
+        companion.addEventListener('click', () => {
+            this.celebrate();
         });
 
         this.renderTasks();
@@ -245,20 +282,17 @@ class TaskManager {
         const urgencyToggle = document.getElementById('urgencyToggle');
         const importanceToggle = document.getElementById('importanceToggle');
 
-        // Handle form submission
         form.addEventListener('submit', (e) => {
             e.preventDefault();
             this.handleAddTask();
         });
 
-        // Handle urgency toggle
         urgencyToggle.addEventListener('click', (e) => {
             e.preventDefault();
             e.stopPropagation();
             this.toggleUrgency();
         });
 
-        // Handle importance toggle
         importanceToggle.addEventListener('click', (e) => {
             e.preventDefault();
             e.stopPropagation();
@@ -297,13 +331,6 @@ class TaskManager {
             return;
         }
 
-        console.log('Creating task:', {
-            title,
-            size: sizeSelect.value,
-            urgency: urgencyToggle.dataset.state,
-            importance: importanceToggle.dataset.state
-        });
-
         this.createTask(
             title,
             sizeSelect.value,
@@ -311,7 +338,6 @@ class TaskManager {
             importanceToggle.dataset.state
         );
 
-        // Reset form
         titleInput.value = '';
         sizeSelect.value = 'M';
         this.updateToggleButton('urgencyToggle', 'low');
