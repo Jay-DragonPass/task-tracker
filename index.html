@@ -95,6 +95,7 @@
             <p class="subtitle">Simple, efficient task management</p>
         </header>
 
+        <!-- Quick Add Section -->
         <div class="task-form-container">
             <form id="taskForm" class="task-form">
                 <div class="form-group">
@@ -134,6 +135,72 @@
                     <button type="submit" class="btn-add">Add Task</button>
                 </div>
             </form>
+        </div>
+
+        <!-- Bulk Upload Section -->
+        <div class="bulk-upload-container">
+            <button class="btn-toggle-bulk" id="toggleBulkBtn">📥 Bulk Import</button>
+            
+            <div class="bulk-upload-panel" id="bulkUploadPanel">
+                <h3>Import Multiple Tasks</h3>
+                <p class="bulk-help-text">Add multiple tasks at once. Each line will become a task.</p>
+                
+                <div class="bulk-options">
+                    <div class="bulk-option">
+                        <label for="bulkTextarea">Paste tasks (one per line):</label>
+                        <textarea 
+                            id="bulkTextarea" 
+                            placeholder="Task 1&#10;Task 2&#10;Task 3&#10;..."
+                            rows="6"
+                        ></textarea>
+                    </div>
+
+                    <div class="bulk-option">
+                        <label>Set defaults for imported tasks:</label>
+                        <div class="bulk-controls">
+                            <div class="bulk-control-item">
+                                <label for="bulkSize">Size:</label>
+                                <select id="bulkSize">
+                                    <option value="S">Small (S)</option>
+                                    <option value="M" selected>Medium (M)</option>
+                                    <option value="L">Large (L)</option>
+                                </select>
+                            </div>
+                            <div class="bulk-control-item">
+                                <label for="bulkUrgency">Urgency:</label>
+                                <select id="bulkUrgency">
+                                    <option value="low" selected>Low</option>
+                                    <option value="high">High</option>
+                                </select>
+                            </div>
+                            <div class="bulk-control-item">
+                                <label for="bulkImportance">Importance:</label>
+                                <select id="bulkImportance">
+                                    <option value="low" selected>Low</option>
+                                    <option value="high">High</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bulk-option">
+                        <label for="bulkFile">Or upload a file (.txt):</label>
+                        <input 
+                            type="file" 
+                            id="bulkFile" 
+                            accept=".txt,.csv" 
+                            class="file-input"
+                        >
+                    </div>
+                </div>
+
+                <div class="bulk-actions">
+                    <button type="button" class="btn-import" id="importBtn">Import Tasks</button>
+                    <button type="button" class="btn-cancel" id="cancelBulkBtn">Cancel</button>
+                </div>
+
+                <div class="import-status" id="importStatus"></div>
+            </div>
         </div>
 
         <div class="empty-state" id="emptyState">
