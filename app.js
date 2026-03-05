@@ -6,6 +6,7 @@ class TaskManager {
         this.loadTasks();
         this.initializeUI();
         this.setupEventListeners();
+        this.setupBulkUpload();
     }
 
     // ==================== Storage ====================
@@ -59,6 +60,33 @@ class TaskManager {
                 this.celebrate();
             }
         }
+    }
+
+    // ==================== Bulk Import ====================
+    bulkCreateTasks(taskTitles, size, urgency, importance) {
+        const validTitles = taskTitles
+            .map(title => title.trim())
+            .filter(title => title.length > 0);
+
+        if (validTitles.length === 0) {
+            return {
+                success: false,
+                message: '❌ No valid tasks to import. Please enter at least one task.',
+                count: 0
+            };
+        }
+
+        let createdCount = 0;
+        validTitles.forEach(title => {
+            this.createTask(title, size, urgency, importance);
+            createdCount++;
+        });
+
+        return {
+            success: true,
+            message: `✅ Successfully imported ${createdCount} task${createdCount !== 1 ? 's' : ''}!`,
+            count: createdCount
+        };
     }
 
     // ==================== Celebration ====================
@@ -298,6 +326,90 @@ class TaskManager {
             e.stopPropagation();
             this.toggleImportance();
         });
+    }
+
+    setupBulkUpload() {
+        const toggleBtn = document.getElementById('toggleBulkBtn');
+        const bulkPanel = document.getElementById('bulkUploadPanel');
+        const importBtn = document.getElementById('importBtn');
+        const cancelBtn = document.getElementById('cancelBulkBtn');
+        const bulkFile = document.getElementById('bulkFile');
+        const bulkTextarea = document.getElementById('bulkTextarea');
+
+        // Toggle bulk panel
+        toggleBtn.addEventListener('click', () => {
+            bulkPanel.classList.toggle('show');
+            if (bulkPanel.classList.contains('show')) {
+                bulkTextarea.focus();
+            }
+        });
+
+        // Cancel bulk import
+        cancelBtn.addEventListener('click', () => {
+            bulkPanel.classList.remove('show');
+            this.clearBulkForm();
+        });
+
+        // Handle file upload
+        bulkFile.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    bulkTextarea.value = event.target.result;
+                };
+                reader.readAsText(file);
+            }
+        });
+
+        // Handle import
+        importBtn.addEventListener('click', () => {
+            this.handleBulkImport();
+        });
+
+        // Allow Enter+Shift to submit bulk import
+        bulkTextarea.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' && e.shiftKey) {
+                e.preventDefault();
+                this.handleBulkImport();
+            }
+        });
+    }
+
+    handleBulkImport() {
+        const bulkTextarea = document.getElementById('bulkTextarea');
+        const bulkSize = document.getElementById('bulkSize').value;
+        const bulkUrgency = document.getElementById('bulkUrgency').value;
+        const bulkImportance = document.getElementById('bulkImportance').value;
+        const statusEl = document.getElementById('importStatus');
+
+        const taskLines = bulkTextarea.value.split('\n');
+        const result = this.bulkCreateTasks(taskLines, bulkSize, bulkUrgency, bulkImportance);
+
+        // Show status message
+        statusEl.textContent = result.message;
+        statusEl.classList.remove('error', 'success');
+        statusEl.classList.add(result.success ? 'success' : 'error');
+
+        if (result.success) {
+            // Clear form after successful import
+            setTimeout(() => {
+                this.clearBulkForm();
+                document.getElementById('bulkUploadPanel').classList.remove('show');
+            }, 1500);
+
+            this.renderTasks();
+        }
+    }
+
+    clearBulkForm() {
+        document.getElementById('bulkTextarea').value = '';
+        document.getElementById('bulkFile').value = '';
+        document.getElementById('bulkSize').value = 'M';
+        document.getElementById('bulkUrgency').value = 'low';
+        document.getElementById('bulkImportance').value = 'low';
+        document.getElementById('importStatus').textContent = '';
+        document.getElementById('importStatus').classList.remove('success', 'error');
     }
 
     toggleUrgency() {
